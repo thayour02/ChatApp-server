@@ -1,11 +1,9 @@
-
 import User from "../model/userModel";
 import bcrypt from "bcryptjs";
-
-
 import { Request, Response } from "express";
 import { generateToken } from "../database/utils";
-import { v2 as cloudinary } from "cloudinary";
+import cloudinary  from '../database/utils';
+
 
 
 
@@ -14,8 +12,9 @@ interface AuthenticatedRequest extends Request {
   user?: any;
 }
 
-export const Register = async(req: AuthenticatedRequest, res: Response) => {
+export const Register = async(req:Request, res:Response) => {
     const { email, password, fullName, profilePicture, bio } = req.body;
+
     try {
         if (!email || !password || !fullName) {
             return res.status(400).json({ message: "Please fill all fields" });
@@ -35,7 +34,6 @@ export const Register = async(req: AuthenticatedRequest, res: Response) => {
             bio
         });
         const token = generateToken(newUser._id.toString())
-
      res.status(201).json({ 
         success:true,
         message: "User created successfully",
@@ -43,7 +41,6 @@ export const Register = async(req: AuthenticatedRequest, res: Response) => {
         token
       });
     } catch (error) {
-        console.error(error);
         res.status(500).json({
             success: false,
             message:`Internal server error: ${error.message}`
@@ -56,7 +53,6 @@ export const Login = async(req:Request, res:Response)=>{
 const {email,password} = req.body;
 try {
     const user = await User.findOne({email})
-
     const isPasswordValid  = await bcrypt.compare(password, user?.password )
     if(!user || !isPasswordValid){
         return res.status(400).json({message: "Invalid details"})
@@ -95,15 +91,12 @@ try {
          profilePicture: upload.secure_url,
          bio
     }, {new: true});
-   
-
    if (!updateUser) {
        return res.status(404).json({
            success: false,
            message: "User not found"
        });
    }
-
    res.status(200).json({
        success: true,
        message: "Profile updated successfully",
@@ -114,6 +107,5 @@ try {
         success:false,
         message:`error update your profile ${error.message}`
     })
-    console.log(error)
 }
 }
