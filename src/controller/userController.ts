@@ -109,3 +109,25 @@ try {
     })
 }
 }
+
+export const delteUser = async(req:AuthenticatedRequest, res:Response)=>{
+    try{
+        const userId = req.user._id
+
+        if(!userId){
+        return res.status(400).json({message: "User not found"})
+        }
+
+        const delteuser = await User.findByIdAndDelete(userId)
+        res.status(200).json({
+            success:true,
+            message:"account deleted successfully",
+            delteUser
+        })
+    }catch(error){
+         res.status(500).json({
+        success:false,
+        message:`error update your profile ${error.message}`
+    })
+    }
+}
